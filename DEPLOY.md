@@ -36,11 +36,26 @@ npm run deploy
 
 ## GitHub仓库设置
 
+### 方法1: 使用GitHub Actions部署（推荐）
+
 1. 进入GitHub仓库设置页面
 2. 找到"Pages"设置
-3. 在"Source"中选择"Deploy from a branch"
-4. 选择"gh-pages"分支和"/ (root)"目录
-5. 保存设置
+3. 在"Source"中选择"GitHub Actions"
+4. 保存设置
+
+### 方法2: 传统分支部署
+
+如果使用传统方式，需要：
+1. 在"Source"中选择"Deploy from a branch"
+2. 选择"gh-pages"分支和"/ (root)"目录
+3. 保存设置
+
+### 权限设置
+
+确保仓库的Actions权限正确设置：
+1. 进入仓库设置 → Actions → General
+2. 在"Workflow permissions"中选择"Read and write permissions"
+3. 勾选"Allow GitHub Actions to create and approve pull requests"
 
 ## 访问地址
 部署成功后，项目将可以通过以下地址访问：
@@ -50,4 +65,27 @@ npm run deploy
 1. 路由已改为hash模式，URL会包含`#`符号
 2. 所有静态资源已配置正确的路径
 3. 确保GitHub仓库名为`moblie-rrweb-record`（与publicPath配置一致）
-4. 如果仓库名不同，需要修改`vue.config.js`中的`publicPath`配置 
+4. 如果仓库名不同，需要修改`vue.config.js`中的`publicPath`配置
+
+## 故障排除
+
+### 403权限错误
+如果遇到类似错误：
+```
+remote: Permission to user/repo.git denied to github-actions[bot]
+```
+
+解决方案：
+1. 检查仓库的Actions权限设置（见上面的权限设置章节）
+2. 确保Pages设置中选择了"GitHub Actions"作为源
+3. 确保workflow文件中包含了正确的permissions配置
+
+### 部署失败
+1. 检查GitHub Actions日志查看具体错误
+2. 确认所有依赖都在package.json中正确声明
+3. 验证构建命令能在本地正常执行
+
+### 页面无法访问
+1. 确认GitHub Pages已启用
+2. 检查仓库名与publicPath配置是否一致
+3. 等待几分钟，GitHub Pages部署需要时间 
