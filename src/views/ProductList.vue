@@ -251,7 +251,8 @@ export default {
     },
 
     goToRedeem(id) {
-      this.$router.push(`/redeem/${id}`)
+      this.$toast('赎回功能暂未开放')
+      // this.$router.push(`/redeem/${id}`)
     },
 
     // 录制开始事件
