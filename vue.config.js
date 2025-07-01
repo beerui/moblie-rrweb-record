@@ -3,6 +3,10 @@ const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
   lintOnSave: false,
+  // GitHub Pages配置
+  publicPath: process.env.NODE_ENV === 'production' ? '/moblie-rrweb-record/' : '/',
+  outputDir: 'dist',
+  assetsDir: 'static',
   devServer: {
     port: 8080,
     open: true
