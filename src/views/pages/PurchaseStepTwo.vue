@@ -177,9 +177,9 @@ export default {
         return
       }
       
-      // 验证银行卡号格式（简单验证）
-      if (this.purchaseForm.bankCard.length < 16) {
-        this.$toast.fail('请输入正确的银行卡号')
+      // 验证银行卡号（只要不为空即可）
+      if (!this.purchaseForm.bankCard.trim()) {
+        this.$toast.fail('请输入银行卡号')
         return
       }
       
