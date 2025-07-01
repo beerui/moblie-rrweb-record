@@ -159,7 +159,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash', // 改为hash模式，适配GitHub Pages
   base: process.env.BASE_URL,
   routes
 })
