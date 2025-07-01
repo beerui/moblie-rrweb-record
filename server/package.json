@@ -1,0 +1,26 @@
+{
+  "name": "record-server",
+  "version": "1.0.0",
+  "description": "录制数据服务器",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "pako": "^2.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "keywords": [
+    "rrweb",
+    "recording",
+    "express",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT"
+}
