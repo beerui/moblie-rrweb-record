@@ -239,7 +239,7 @@ export default {
     // 去购买
     goToPurchase(id, mode = 'step') {
       if (mode === 'step') {
-        // 分步购买流程（默认）
+        // 分步购买流程 - 跳转到步骤一开始正式购买流程
         this.$router.push({
           name: 'PurchaseStepOne',
           query: { id: id }
@@ -257,23 +257,76 @@ export default {
     // 录制开始事件
     onRecordStarted() {
       console.log('产品列表：录制开始')
-      this.$toast.success('录制已开始，现在可以进行购买操作')
+      this.$toast.success('录制已开始，正在记录当前页面操作...')
       
-      // 录制开始后，直接进入分步购买流程
+      // 录制开始后，模拟一些当前页面的操作，然后跳转
       if (this.selectedProductId) {
-        this.goToPurchase(this.selectedProductId, 'step')
+        // 先高亮显示被选中的产品
+        this.highlightSelectedProduct()
+        
+        // 记录用户选择产品的操作
+        this.recordProductSelection()
+        
+        setTimeout(() => {
+          console.log('产品列表：录制当前页面操作完成，准备跳转到购买步骤一')
+          this.goToPurchase(this.selectedProductId, 'step')
+        }, 2000) // 增加到2秒，让用户看到选择效果并充分录制
       }
+    },
+
+    // 记录产品选择操作
+    recordProductSelection() {
+      // 模拟用户浏览产品的过程
+      const selectedProduct = this.products.find(p => p.id === this.selectedProductId)
+      if (selectedProduct) {
+        console.log('产品列表：用户选择了产品:', selectedProduct.name)
+        
+        // 显示产品选择信息
+        this.$toast({
+          message: `已选择：${selectedProduct.name}`,
+          duration: 1500
+        })
+        
+        // 触发一些可录制的交互
+        setTimeout(() => {
+          this.$toast({
+            message: '即将进入购买流程...',
+            duration: 800
+          })
+        }, 1000)
+      }
+    },
+
+    // 高亮显示选中的产品
+    highlightSelectedProduct() {
+      // 找到对应的产品卡片并添加高亮效果
+      const productCards = document.querySelectorAll('.product-card')
+      productCards.forEach((card, index) => {
+        if (index === this.selectedProductId - 1) {
+          card.style.transition = 'all 0.3s ease'
+          card.style.transform = 'scale(1.02)'
+          card.style.boxShadow = '0 8px 24px rgba(25, 137, 250, 0.3)'
+          card.style.border = '2px solid #1989fa'
+          card.style.backgroundColor = '#f0f8ff'
+          
+          // 1.5秒后恢复，让高亮效果持续更长时间
+          setTimeout(() => {
+            card.style.transform = 'scale(1)'
+            card.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.04)'
+            card.style.border = '2px solid transparent'
+            card.style.backgroundColor = 'white'
+          }, 1500)
+        }
+      })
     },
 
     // 用户拒绝录制
     onRecordDeclined() {
       console.log('产品列表：用户拒绝录制')
-      this.$toast('已取消录制，将使用传统购买流程')
+      this.$toast('已取消录制，购买操作已取消')
       
-      // 用户拒绝录制，使用传统单页购买
-      if (this.selectedProductId) {
-        this.goToPurchase(this.selectedProductId, 'single')
-      }
+      // 重置选中的产品ID
+      this.selectedProductId = null
     },
 
     // 录制超时
@@ -347,6 +400,7 @@ export default {
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.3s ease;
+  border: 2px solid transparent;
 }
 
 .product-card:hover {

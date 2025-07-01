@@ -1,9 +1,9 @@
 <template>
   <RecordWrapper 
-    :auto-start="true"
+    :auto-start="false"
     :show-controls="false"
     :stop-on-destroy="false"
-    :require-consent="true"
+    :require-consent="false"
     :metadata="{ action: 'purchase-step-1', productId: productId, flow: 'purchase-start' }"
     @record-timeout="handleRecordTimeout"
     @timeout-confirmed="handleTimeoutConfirmed"
@@ -107,6 +107,13 @@ export default {
   created() {
     this.loadProduct()
   },
+  async mounted() {
+    // 检查录制状态，如果还没有录制，说明用户直接访问了这个页面
+    // 使用nextTick确保组件完全挂载后再执行
+    this.$nextTick(async () => {
+      await this.checkAndHandleRecording()
+    })
+  },
   methods: {
     loadProduct() {
       this.productId = parseInt(this.$route.query.id) || parseInt(this.$route.params.id)
@@ -144,6 +151,41 @@ export default {
 
     onRecordDeclined() {
       console.log('录制拒绝')
+      // 如果用户拒绝录制，返回产品列表
+      this.$toast('录制被拒绝，返回产品列表')
+      this.$router.push('/')
+    },
+
+    // 检查并处理录制状态
+    async checkAndHandleRecording() {
+      try {
+        const GlobalRecorder = (await import('@/utils/global-recorder')).default
+        const globalRecorder = GlobalRecorder.getInstance()
+        const status = globalRecorder.getRecordingStatus()
+        
+        console.log('PurchaseStepOne：录制状态检查:', status)
+        
+        if (!status.isRecording) {
+          // 如果没有录制，说明用户直接访问了这个页面，需要开始录制
+          console.log('PurchaseStepOne：检测到未录制，开始录制流程')
+          this.$toast('检测到未开始录制，正在启动录制...')
+          
+          // 修改RecordWrapper配置以要求同意
+          if (this.$refs.recordWrapper) {
+            // 显示录制同意弹框
+            this.$refs.recordWrapper.showRecordingConsent()
+          }
+        } else {
+          console.log('PurchaseStepOne：检测到已经在录制中，继续购买流程')
+          this.$toast.success('继续购买流程录制')
+        }
+      } catch (error) {
+        console.error('PurchaseStepOne：检查录制状态失败:', error)
+        // 如果检查失败，尝试开始录制
+        if (this.$refs.recordWrapper) {
+          this.$refs.recordWrapper.showRecordingConsent()
+        }
+      }
     }
   }
 }
