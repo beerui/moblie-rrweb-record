@@ -31,14 +31,15 @@ src/
 ├── components/
 │   └── RecordWrapper.vue          # 录制包装组件
 ├── utils/
+│   ├── global-recorder.js         # 全局录制器
 │   └── screen-record.js           # 录制功能封装
 ├── views/
-│   ├── Home.vue                   # 首页
 │   ├── ProductList.vue            # 理财产品列表
-│   ├── ProductDetail.vue          # 产品详情
-│   ├── Purchase.vue               # 购买流程（带录制）
-│   ├── Redeem.vue                 # 赎回流程（带录制）
-│   └── RecordPlayer.vue           # 录制回放
+│   └── pages/                     # 购买流程页面
+│       ├── PurchaseStepOne.vue    # 购买步骤1：确认产品
+│       ├── PurchaseStepTwo.vue    # 购买步骤2：填写信息
+│       ├── PurchaseStepThree.vue  # 购买步骤3：确认购买
+│       └── PurchaseStepFour.vue   # 购买步骤4：购买完成
 ├── router/
 │   └── index.js                   # 路由配置
 ├── App.vue                        # 根组件
