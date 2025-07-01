@@ -1,37 +1,64 @@
 # GitHub Pages 部署说明
 
+## 项目配置
+
+这是一个Vue2 + Vant + rrweb的移动端录制系统，已完全配置好可以部署到GitHub Pages。
+
 ## 已完成的配置
 
 ### 1. Vue配置修改
-- 修改了`vue.config.js`，添加了适合GitHub Pages的`publicPath`配置
-- 配置为生产环境时使用`/moblie-rrweb-record/`作为基础路径
+- ✅ 修改了`vue.config.js`，添加了适合GitHub Pages的`publicPath`配置
+- ✅ 配置为生产环境时使用`/moblie-rrweb-record/`作为基础路径
+- ✅ 设置了正确的输出目录和静态资源目录
 
 ### 2. 路由配置修改
-- 将路由模式从`history`改为`hash`模式
-- 这样可以避免GitHub Pages不支持服务端路由重写的问题
+- ✅ 将路由模式从`history`改为`hash`模式
+- ✅ 这样可以避免GitHub Pages不支持服务端路由重写的问题
 
 ### 3. GitHub Actions自动部署
-- 创建了`.github/workflows/deploy.yml`文件
-- 配置为在推送到main分支时自动构建和部署
+- ✅ 创建了`.github/workflows/deploy.yml`文件
+- ✅ 使用最新的Actions配置，支持并发控制
+- ✅ 分离build和deploy步骤，提高可靠性
 
-### 4. 包管理配置
-- 添加了`gh-pages`依赖用于手动部署
-- 添加了`deploy`脚本命令
+### 4. 静态文件配置
+- ✅ 添加了`.nojekyll`文件禁用Jekyll处理
+- ✅ 确保所有第三方库文件正确包含
 
 ## 部署步骤
 
-### 自动部署（推荐）
-1. 将代码推送到GitHub仓库的main分支
-2. GitHub Actions会自动执行构建和部署
-3. 部署完成后可通过 `https://用户名.github.io/moblie-rrweb-record/` 访问
+### 一键自动部署
 
-### 手动部署
+**第一步：推送代码**
 ```bash
-# 构建项目
+git add .
+git commit -m "配置GitHub Pages部署"
+git push origin main
+```
+
+**第二步：GitHub仓库设置**
+1. 进入GitHub仓库设置页面
+2. 点击左侧菜单的 "Pages"
+3. 在 "Source" 下拉菜单中选择 **"GitHub Actions"**
+4. 保存设置
+
+**第三步：配置权限（重要）**
+1. 在仓库设置页面，点击左侧菜单的 "Actions" → "General"
+2. 在 "Workflow permissions" 部分选择 **"Read and write permissions"**
+3. 勾选 **"Allow GitHub Actions to create and approve pull requests"**
+4. 点击 "Save" 保存
+
+**第四步：等待部署完成**
+1. 回到仓库首页，点击 "Actions" 标签
+2. 查看 "Deploy Vue App to GitHub Pages" 工作流状态
+3. 等待显示绿色勾号表示部署成功
+
+### 本地测试
+```bash
+# 本地构建测试
 npm run build
 
-# 手动部署到gh-pages分支
-npm run deploy
+# 本地预览构建结果
+npx serve dist
 ```
 
 ## GitHub仓库设置
