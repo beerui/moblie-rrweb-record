@@ -88,4 +88,25 @@ remote: Permission to user/repo.git denied to github-actions[bot]
 ### 页面无法访问
 1. 确认GitHub Pages已启用
 2. 检查仓库名与publicPath配置是否一致
-3. 等待几分钟，GitHub Pages部署需要时间 
+3. 等待几分钟，GitHub Pages部署需要时间
+
+### 显示README.md而不是项目页面
+如果GitHub Pages显示的是README.md而不是您的Vue项目：
+
+1. **确认Pages源设置**：
+   - 进入仓库设置 → Pages
+   - 确保Source设置为"GitHub Actions"而不是"Deploy from a branch"
+
+2. **检查部署状态**：
+   - 进入仓库的Actions标签页
+   - 查看最新的workflow运行状态
+   - 确保部署成功完成
+
+3. **等待生效**：
+   - GitHub Pages可能需要几分钟才能显示新部署的内容
+   - 清除浏览器缓存后重新访问
+
+4. **检查部署的文件**：
+   - 在Actions页面点击最新的workflow
+   - 确认"Deploy to GitHub Pages"步骤成功执行
+   - 确认上传的artifact包含index.html文件 

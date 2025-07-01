@@ -78,17 +78,33 @@
 4. ✅ 支持手动部署选项
 5. ✅ 包含完整的故障排除指南
 
+## README显示问题解决
+- [x] 修复GitHub Actions只在main分支推送时触发
+- [x] 确保.nojekyll文件正确部署到dist目录
+- [x] 添加README显示问题的故障排除指南
+- [x] 简化部署条件逻辑
+
 ## 重要操作步骤
 在推送代码后，还需要进行以下GitHub仓库设置：
 
 1. **设置Pages源为GitHub Actions**：
-   - 进入仓库设置 → Pages
-   - Source选择"GitHub Actions"
+   - 进入仓库设置 → Pages  
+   - **重要**: Source必须选择"GitHub Actions"而不是"Deploy from a branch"
+   - 这是解决显示README.md问题的关键步骤
 
 2. **配置Actions权限**：
    - 进入仓库设置 → Actions → General  
    - Workflow permissions选择"Read and write permissions"
    - 勾选"Allow GitHub Actions to create and approve pull requests"
 
-3. **推送代码**：
-   - GitHub Actions会自动执行部署流程 
+3. **推送代码并等待部署**：
+   - 推送到main分支会触发GitHub Actions
+   - 等待部署完成（查看Actions标签页）
+   - 部署成功后等待几分钟让GitHub Pages生效
+
+## 常见问题解决
+如果仍然显示README.md：
+1. 确认Pages设置中Source为"GitHub Actions"
+2. 检查Actions页面确认部署成功
+3. 清除浏览器缓存
+4. 等待5-10分钟让变更生效 
