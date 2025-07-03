@@ -32,7 +32,12 @@
         <div class="step-content">
           <div class="step-card success-card">
             <div class="success-content">
-              <van-icon name="success" size="50" color="#07c160" />
+              <van-image
+                width="10rem" 
+                height="10rem"
+                fit="contain"
+                src="https://img01.yzcdn.cn/vant/cat.jpeg"
+              />
               <h3>购买成功！</h3>
               <p>您已成功购买理财产品</p>
               
@@ -108,11 +113,23 @@
                       >
                         停止回放
                       </van-button>
+                      <van-button 
+                        type="success" 
+                        size="small" 
+                        @click="exportToMP4"
+                        :loading="isExporting"
+                        :disabled="isReplaying"
+                        icon="down"
+                      >
+                        {{ isExporting ? '导出中...' : '导出数据' }}
+                      </van-button>
                     </div>
-                    <div 
+                                        <div 
                       id="step-replay-container" 
                       class="replay-container"
-                    ></div>
+                    >
+                      <!-- 水印已经录制在视频中，不需要额外显示 -->
+                    </div>
                   </div>
                 </div>
 
@@ -169,13 +186,16 @@
 
 <script>
 import RecordWrapper from '@/components/RecordWrapper.vue'
-import { Loading } from 'vant'
+import { Loading,Image as VanImage } from 'vant'
 
 export default {
   name: 'PurchaseStepFour',
   components: {
     RecordWrapper,
-    [Loading.name]: Loading
+    [Loading.name]: Loading,
+    [VanImage.name]: VanImage
+      
+    
   },
   data() {
     return {
@@ -183,9 +203,11 @@ export default {
       orderInfo: null,
       recordingResult: null,
       isReplaying: false,
-      replayPlayer: null
+      replayPlayer: null,
+      isExporting: false
     }
   },
+
   watch: {
     recordingResult: {
       handler(newVal, oldVal) {
@@ -345,7 +367,13 @@ export default {
       }
       
       try {
+        console.log('开始回放流程...')
+        
+        // 先设置回放状态
         this.isReplaying = true
+        console.log('设置isReplaying为true')
+        
+        // 水印已录制在视频中，无需额外处理
         
         // 清空容器并设置基础样式
         const container = document.getElementById('step-replay-container')
@@ -473,12 +501,73 @@ export default {
       }
       this.isReplaying = false
       
+      // 水印已录制在视频中，无需额外处理
+      
       // 清理容器
       const container = document.getElementById('step-replay-container')
       if (container) {
         container.innerHTML = '<div style="text-align: center; padding: 50px; color: #999;">回放已停止</div>'
       }
-    }
+    },
+
+    // 水印相关方法已移除，因为水印已录制在视频中
+
+    // 导出录制数据
+    async exportToMP4() {
+      if (!this.recordingResult || !this.recordingResult.recordingResult || !this.recordingResult.recordingResult.events) {
+        this.$toast.fail('没有录制数据可导出')
+        return
+      }
+
+      this.isExporting = true
+      
+      try {
+        const events = this.recordingResult.recordingResult.events
+        const orderNo = this.orderInfo?.orderNo || 'UNKNOWN'
+        const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '')
+        
+        const exportData = {
+          orderNo: orderNo,
+          productId: this.productId,
+          productName: this.orderInfo?.productName || '未知产品',
+          exportTime: new Date().toISOString(),
+          duration: this.recordingResult.recordingResult.duration,
+          eventCount: events.length,
+          events: events
+        }
+        
+        const filename = `购买流程录制_${orderNo}_${timestamp}.json`
+        this.downloadFile(JSON.stringify(exportData, null, 2), filename, 'application/json')
+        
+        this.$toast.success('录制数据已导出')
+        
+      } catch (error) {
+        this.$toast.fail('导出失败')
+      } finally {
+        this.isExporting = false
+      }
+    },
+
+
+
+        // 下载文件的通用方法
+    downloadFile(content, filename, mimeType) {
+      return new Promise((resolve) => {
+        const blob = new Blob([content], { type: mimeType })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = filename
+        a.style.display = 'none'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+        resolve()
+      })
+    },
+
+
   }
 }
 </script>
@@ -612,10 +701,15 @@ export default {
 
 .replay-controls {
   margin-bottom: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .replay-controls .van-button {
-  margin-right: 8px;
+  flex: 1;
+  min-width: 90px;
+  margin-right: 0;
 }
 
 .replay-container {
@@ -627,12 +721,16 @@ export default {
   width: 100%;
   margin-top: 12px;
   position: relative;
-  overflow: hidden;
+  overflow: visible !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  isolation: isolate;
-  contain: layout style;
   z-index: 1;
 }
+
+/* 水印相关样式已移除，因为水印已录制在视频中 */
+
+
+
+
 
 .replay-container iframe {
   width: 100% !important;

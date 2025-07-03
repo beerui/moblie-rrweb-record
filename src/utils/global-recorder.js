@@ -10,6 +10,8 @@ class GlobalRecorder {
     this.recordingId = null
     this.recordingStartTime = null
     this.maxRecordingDuration = 3 * 60 * 1000 // 3分钟
+    this.watermarkElement = null
+    this.watermarkTimer = null
     console.log('GlobalRecorder：初始化完成')
   }
 
@@ -80,6 +82,7 @@ class GlobalRecorder {
       
       if (this.recorder && typeof this.recorder === 'function') {
         this.isRecording = true
+        this.createGlobalWatermark()
         this.emit('started', { recordingId: this.recordingId })
         console.log('GlobalRecorder：录制开始成功')
         return true
@@ -89,6 +92,7 @@ class GlobalRecorder {
     } catch (error) {
       console.error('GlobalRecorder：开始录制失败:', error)
       this.isRecording = false
+      this.removeGlobalWatermark()
       this.emit('error', error)
       return false
     }
@@ -148,6 +152,7 @@ class GlobalRecorder {
       }
       
       this.isRecording = false
+      this.removeGlobalWatermark()
       const events = [...this.events]
       
       console.log('GlobalRecorder：录制停止成功, 事件数量:', events.length)
@@ -159,6 +164,7 @@ class GlobalRecorder {
     } catch (error) {
       console.error('GlobalRecorder：停止录制失败:', error)
       this.isRecording = false
+      this.removeGlobalWatermark()
       this.emit('error', error)
       return null
     }
@@ -293,6 +299,73 @@ class GlobalRecorder {
       
       this.emit('recording-finished', errorResult)
       return errorResult
+    }
+  }
+
+  // 创建全局水印
+  createGlobalWatermark() {
+    if (this.watermarkElement) {
+      this.removeGlobalWatermark()
+    }
+
+    // 创建水印元素
+    this.watermarkElement = document.createElement('div')
+    this.watermarkElement.id = 'global-recording-watermark'
+    this.watermarkElement.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: monospace;
+      z-index: 999999;
+      pointer-events: none;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    `
+
+    // 添加到body
+    document.body.appendChild(this.watermarkElement)
+
+    // 启动定时器更新时间
+    this.updateWatermarkTime()
+    this.watermarkTimer = setInterval(() => {
+      this.updateWatermarkTime()
+    }, 1000)
+
+    console.log('GlobalRecorder：全局水印已创建')
+  }
+
+  // 更新水印时间
+  updateWatermarkTime() {
+    if (!this.watermarkElement) return
+
+    const now = new Date()
+    const timeText = now.getFullYear() + '年' + 
+                    String(now.getMonth() + 1).padStart(2, '0') + '月' + 
+                    String(now.getDate()).padStart(2, '0') + '日 ' + 
+                    String(now.getHours()).padStart(2, '0') + ':' + 
+                    String(now.getMinutes()).padStart(2, '0') + ':' +
+                    String(now.getSeconds()).padStart(2, '0')
+
+    this.watermarkElement.textContent = timeText
+  }
+
+  // 移除全局水印
+  removeGlobalWatermark() {
+    // 清理定时器
+    if (this.watermarkTimer) {
+      clearInterval(this.watermarkTimer)
+      this.watermarkTimer = null
+    }
+
+    // 移除DOM元素
+    if (this.watermarkElement && this.watermarkElement.parentNode) {
+      this.watermarkElement.parentNode.removeChild(this.watermarkElement)
+      this.watermarkElement = null
+      console.log('GlobalRecorder：全局水印已移除')
     }
   }
 }

@@ -1,5 +1,7 @@
 <template>
   <div class="record-wrapper">
+    <!-- 水印现在由GlobalRecorder全局管理，无需在组件中显示 -->
+
     <!-- 录制同意弹框 -->
     <van-dialog
       v-model="showRecordDialog"
@@ -140,7 +142,8 @@ export default {
       recordingTimer: null,
       timeoutTimer: null,
       recordingTime: '00:00',
-      hasUserConsent: false
+      hasUserConsent: false,
+      showConsentDialog: false
     }
   },
   async mounted() {
@@ -570,7 +573,9 @@ export default {
         this.$emit('recording-finished', errorResult)
         return errorResult
       }
-    }
+    },
+
+    // 水印相关方法已移除，现在由GlobalRecorder全局管理
   }
 }
 </script>
@@ -660,4 +665,6 @@ export default {
   border-radius: 6px;
   margin: 0;
 }
+
+/* 水印样式已移除，现在由GlobalRecorder全局管理 */
 </style> 
